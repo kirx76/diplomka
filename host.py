@@ -28,7 +28,7 @@ settings = {
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write('HELLO WORLD!')
+        self.render("index.html")
 
 def make_app():
     return tornado.web.Application([
@@ -36,7 +36,7 @@ def make_app():
         # (r"/post/([0-9]+)", ViewPostHandler),
     ], **settings,
         template_path=os.path.join(os.path.dirname(__file__), "templates"),
-        static_path=os.path.join(os.path.dirname(__file__), "static"))
+        static_path=os.path.join(os.path.dirname(__file__), "static"), debug=True)
 
 
 if __name__ == "__main__":
