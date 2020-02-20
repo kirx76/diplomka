@@ -1,10 +1,10 @@
 #main-navbar {
     height: 80px;
 }
-#dish_lines div a p {
+/*#dish_lines div a p {
     white-space: nowrap;
     overflow: hidden;
-}
+}*/
 /*#dish_lines div a p::after {
 	content: ''; 
 	position: absolute; 
