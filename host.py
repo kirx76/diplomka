@@ -3,6 +3,7 @@ import os
 
 import tornado.ioloop
 import tornado.web
+import connections
 
 settings = {
     "cookie_secret": "61oETzKXQAGaYdk333EmGeJfdfdh12345ddsa2JFuYh7EQnp2XdTP1o/Vo=",
@@ -26,9 +27,14 @@ settings = {
 #                     return self.get_secure_cookie("login")
 #         return None
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html")
+        connect = connections.getConnection()
+        cursor = connect.cursor()
+        cursor.execute("select * from dish")
+        dishs = cursor.fetchall()
+        self.render("index.html", dishs=dishs)
 
 def make_app():
     return tornado.web.Application([
@@ -41,5 +47,5 @@ def make_app():
 
 if __name__ == "__main__":
     app = make_app()
-    app.listen(80)
+    app.listen(8080)
     tornado.ioloop.IOLoop.current().start()

@@ -4,8 +4,17 @@
 {% end %}
 {% block content %}
 <div class="container-fluid bg-dark mt-2">
-    <div class="container">
-        <h1 class="text-danger">HELLO!</h1>
+    <div class="container m-auto d-block">
+        <div class="row">
+            {% for dish in dishs %}
+        			{% if dish['img_src'] %}
+            <div class="col-4">
+                <img class="d-flex w-100" src="./static/img/dishs/{{ dish['img_src'] }}" style="align: center;">
+                </img>
+            </div>
+            {% end %}
+			{% end %}
+        </div>
     </div>
 </div>
 {% end %}
