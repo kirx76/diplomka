@@ -3,13 +3,19 @@
 Главная
 {% end %}
 {% block content %}
-<div class="container-fluid bg-dark mt-2">
+<div class="container-fluid bg-light">
     <div class="container m-auto d-block">
-        <div class="row">
+        <div class="row" id="dish_lines">
             {% for dish in dishs %}
-        			{% if dish['img_src'] %}
-            <div class="col-4">
-                <img class="d-flex w-100" src="./static/img/dishs/{{ dish['img_src'] }}" style="align: center;">
+        			{% if dish['dish_img_src'] %}
+            <div class="col-lg-4 col-sm-2">
+                <a href="/dish/{{dish['dish_id']}}" class="text-decoration-none">
+                <div class="container border border-dark rounded m-2 ml-1">
+                <img class="d-flex w-100" src="../static/img/dishs/{{ dish['dish_img_src'] }}">
+                <p class="font-weight-bold text-info">{{dish['dish_name']}}</p>
+                <p class="text-muted text-truncate">{{dish['dish_description']}}</p>
+            </a>
+            </div>
                 </img>
             </div>
             {% end %}

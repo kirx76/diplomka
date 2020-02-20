@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Информация о блюде — {{dish['dish_name']}}{% end %}
+{% block content %}
+<div class="container-fluid bg-light">
+    <div class="container m-auto d-block">
+        <div class="row">
+            <div class="col-lg-12 col-sm-6">
+                <div class="container border border-dark rounded m-2 ml-1">
+                    <div class="row">
+                        <div class="col-6 d-inline-block">
+                            <img class="d-flex w-auto col-6" src="../static/img/dishs/{{ dish['dish_img_src'] }}">
+                                <p class="font-weight-bold text-info">
+                                    {{dish['dish_name']}}
+                                </p>
+                                <p class="text-muted">
+                                    {{dish['dish_description']}}
+                                </p>
+                            </img>
+                        </div>
+                        <div class="col-6 d-inline-block">
+                        	<h2>Список ингредиентов:</h1>
+                            {% for ingredient in ingredients %}
+                            <div class="row border rounded mt-1">
+                            	<div class="col-10 d-inline-block">
+									<span class="ml-2"><abbr class="text-decoration-none" title="{{ingredient['ingredient_description']}}">{{ ingredient['ingredient_name'] }}</abbr></span>
+								</div>
+								<div class="col-2 d-inline-block">
+									<p class="text-muted">{{ingredient['ingredient_cal']}} <sub>Ккал</sub></p>
+								</div>
+							</div>
+							{% end %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}

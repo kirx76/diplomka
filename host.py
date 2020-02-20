@@ -34,11 +34,26 @@ class MainHandler(tornado.web.RequestHandler):
         cursor = connect.cursor()
         cursor.execute("select * from dish")
         dishs = cursor.fetchall()
+        cursor.close()
+        connect.close()
         self.render("index.html", dishs=dishs)
+
+class viewDishInfoHandler(tornado.web.RequestHandler):
+    def get(self, args):
+        connect = connections.getConnection()
+        cursor = connect.cursor()
+        cursor.execute(f"SELECT * FROM dish join(ingredients_list_id) USING(dish_id) JOIN(ingredients) USING(ingredient_id) WHERE dish_id={args}")
+        dish = cursor.fetchone()
+        cursor.execute(f"SELECT * FROM dish join(ingredients_list_id) USING(dish_id) JOIN(ingredients) USING(ingredient_id) WHERE dish_id={args}")
+        ingredients = cursor.fetchall()
+        cursor.close()
+        connect.close()
+        self.render("dishinfo.html", dish=dish, ingredients=ingredients)
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
+        (r"/dish/([0-9]+)", viewDishInfoHandler)
         # (r"/post/([0-9]+)", ViewPostHandler),
     ], **settings,
         template_path=os.path.join(os.path.dirname(__file__), "templates"),
