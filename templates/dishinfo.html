@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Информация о блюде — {{dish['dish_name']}}{% end %}
+{% block title %}Информация о блюде — {{dishes['name']}}{% end %}
 {% block content %}
 <div class="container-fluid bg-light">
     <div class="container m-auto d-block">
@@ -8,27 +8,30 @@
                 <div class="container border border-dark rounded m-2 ml-1">
                     <div class="row">
                         <div class="col-6 d-inline-block">
-                            <img class="d-flex w-auto col-6" src="../static/img/dishs/{{ dish['dish_img_src'] }}">
+                            <img class="d-flex w-auto col-6" src="../static/img/dishs/{{ dishes['img_src'] }}">
                                 <p class="font-weight-bold text-info">
-                                    {{dish['dish_name']}}
+                                    {{dishes['name']}}
                                 </p>
                                 <p class="text-muted">
-                                    {{dish['dish_description']}}
+                                    {{dishes['description']}}
                                 </p>
                             </img>
                         </div>
-                        <div class="col-6 d-inline-block">
-                        	<h2>Список ингредиентов:</h1>
+                        <div class="col-6 d-inline-block mb-4">
+                        	<h2>Список ингредиентов</h2>
                             {% for ingredient in ingredients %}
-                            <div class="row border rounded mt-1">
-                            	<div class="col-10 d-inline-block">
-									<span class="ml-2"><abbr class="text-decoration-none" title="{{ingredient['ingredient_description']}}">{{ ingredient['ingredient_name'] }}</abbr></span>
+                            <div class="row border rounded mt-2 mr-0">
+                            	<div class="col-9 d-inline-block mt-2 mb-2">
+									<span class="ml-2"><abbr class="text-decoration-none" title="{{ingredient['description']}}" id="ingr_name_{{ingredient['id']}}">{{ ingredient['name'] }}</abbr></span>
 								</div>
-								<div class="col-2 d-inline-block">
-									<p class="text-muted">{{ingredient['ingredient_cal']}} <sub>Ккал</sub></p>
+								<div class="col-3 d-inline-block mt-2 mb-2">
+									<p class="text-muted">{{ingredient['calories']}}<sub>Ккал</sub></p>
 								</div>
 							</div>
 							{% end %}
+								<div class="col-12 d-inline-block mt-2 mb-2 ml-0">
+									<p class="text-muted">Итоговая сумма калорий:</p>
+								</div>
                         </div>
                     </div>
                 </div>

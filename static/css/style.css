@@ -1,6 +1,26 @@
 #main-navbar {
     height: 80px;
 }
+
+div p {
+	display: flex;
+	align-items: center;
+	margin-bottom: 0;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/*[id^="ingr_name_"] {
+	vertical-align: -webkit-baseline-middle;
+	color: red;
+}*/
 /*#dish_lines div a p {
     white-space: nowrap;
     overflow: hidden;

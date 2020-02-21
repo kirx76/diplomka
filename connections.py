@@ -8,7 +8,7 @@ def getConnection():
     connection = pymysql.connect(host='localhost',
                                  user='root',
                                  password='',
-                                 db='diplomka',
+                                 db='diplom',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
     return connection

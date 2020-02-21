@@ -6,14 +6,14 @@
 <div class="container-fluid bg-light">
     <div class="container m-auto d-block">
         <div class="row" id="dish_lines">
-            {% for dish in dishs %}
-        			{% if dish['dish_img_src'] %}
+            {% for dish in dishes %}
+        			{% if dish['img_src'] %}
             <div class="col-lg-4 col-sm-2">
-                <a href="/dish/{{dish['dish_id']}}" class="text-decoration-none">
+                <a href="/dish/{{dish['id']}}" class="text-decoration-none">
                 <div class="container border border-dark rounded m-2 ml-1">
-                <img class="d-flex w-100" src="../static/img/dishs/{{ dish['dish_img_src'] }}">
-                <p class="font-weight-bold text-info">{{dish['dish_name']}}</p>
-                <p class="text-muted text-truncate">{{dish['dish_description']}}</p>
+                <img class="d-flex w-100" src="../static/img/dishs/{{ dish['img_src'] }}">
+                <p class="font-weight-bold text-info">{{dish['name']}}</p>
+                <p class="text-muted text-truncate mb-2">{{dish['description']}}</p>
             </a>
             </div>
                 </img>
@@ -23,4 +23,13 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+    if (location.search) {
+        $("#auth-modal-title").text("Вы не авторизовались!");
+        $("#auth-modal-title").css("color", "red");
+        $("#logInModal").modal('show');
+    }
+})
+</script>
 {% end %}
