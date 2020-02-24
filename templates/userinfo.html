@@ -1,8 +1,100 @@
 {% extends 'base.html' %}
 {% block title %}Информация о пользователе — {{user['id']}}{% end %}
 {% block content %}
-{{userinfo}}
+<div class="container">
+	<div class="container-fluid mt-3" id="userinfo">
+		<div class="row">
+			<div class="col-4">
+				<img src="../static/img/user_imgs/{{ userinfo ['image']}}" class="rounded float-left w-75 mb-5" alt="{{ userinfo ['image']}}">
+				<form action="/user/{{userinfo['id']}}" method="post" class="mt-3">
+				<div class="input-group input-group-sm mb-3 w-75">
+	  				<div class="input-group-prepend">
+	    				<span class="input-group-text" id="inputGroup-sizing-sm">Имя</span>
+	  				</div>
+	  				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value="{{userinfo['name']}}" name="name">
+				</div>
+				<div class="input-group input-group-sm mb-3 w-75">
+	  				<div class="input-group-prepend">
+	    				<span class="input-group-text" id="inputGroup-sizing-sm">Телефон</span>
+	  				</div>
+	  				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value="{{userinfo['phone']}}" name="phone">
+				</div>
+				<button type="submit" class="btn btn-primary d-none" id="save-user-button">Сохранить изменения</button>
+				<h5>Ваш последний заказ</h5>
+				<table class="table w-75">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">Название</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for last_dish in last_order%}
+						<tr>
+							<th scope="row">{{last_dish}}</th>
+						</tr>
+						{%end%}
+					</tbody>
+				</table>
+			</form>
+			</div>
+			<div class="col-8">
+				<h3>Ваши заказы</h3>
+				<div style="height:600px; width:970px;overflow:auto;">
+				<table class="table">
+				  <thead class="thead-dark">
+				    <tr>
+				      <th scope="col">Номер заказа</th>
+				      <th scope="col">Дата заказа</th>
+				      <th scope="col">Итоговая цена</th>
+				    </tr>
+				  </thead>
+	  				  <tbody>
+			{% for order in orders %}
+				    <tr>
+				      <th scope="row">{{order['id']}}</th>
+				      <td>{{order['date']}}</td>
+				      <td>{{order['total_price']}}</td>
+				    </tr>
+			{%end%}
+				  	  </tbody>
+				</table>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+<script>
+$( "input[type='text']" ).change(function() {
+ // проверка значения input( $( this ).val() )
+ 	$('#save-user-button').removeClass("d-none");;
+});
+
+
+
+// function aj(){
+// $.ajax({
+//   url: "changeUserInfo",
+//   type: "POST", // адрес, на который будет отправлен запрос
+//   context: $( ".myClass" ), // новый контекст исполнения функции
+//   success: function(){ // если запрос успешен вызываем функцию
+//     $( this ).html( "Всё ок" ); // добавлем текстовое содержимое в элемент с классом .myClass
+//   }
+// });  
+// }
+    
+
+
+</script>
+
+<!-- {{userinfo}}
+<br><br><br><br><br>
 {% for order in orders %}
 {{ order }}
-{% end %}
+
+
+
+{% end %} -->
 {% end %}

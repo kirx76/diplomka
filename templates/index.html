@@ -3,33 +3,71 @@
 Главная
 {% end %}
 {% block content %}
+
+
 <div class="container-fluid bg-light">
-    <div class="container m-auto d-block">
-        <div class="row" id="dish_lines">
-            {% for dish in dishes %}
-        			{% if dish['img_src'] %}
-            <div class="col-lg-4 col-sm-2">
-                <a href="/dish/{{dish['id']}}" class="text-decoration-none">
-                <div class="container border border-dark rounded m-2 ml-1">
-                <img class="d-flex w-100" src="../static/img/dishs/{{ dish['img_src'] }}">
-                <p class="font-weight-bold text-info">{{dish['name']}}</p>
-                <p class="text-muted text-truncate mb-2">{{dish['description']}}</p>
-            </a>
+   <div class="container m-auto d-block">
+      <div class="row" id="dish_lines">
+         {% for dish in dishes %}
+         {% if dish['img_src'] %}
+         <div class="col-lg-4 col-sm-2" id="dish_id_{{dish['id']}}">
+            <div class="container border border-dark rounded m-2 ml-1">
+               <img class="d-flex w-100" src="../static/img/dishs/{{ dish['img_src'] }}">
+               <p class="font-weight-bold text-info">{{dish['name']}}</p>
+               <p class="text-muted text-truncate mb-2">{{dish['description']}}</p>
+               <i class="material-icons btn btn-primary mb-2 float-left border-dark rounded {% if user %}{%if dish not in dishes_list%}d-none{%end%}{%else%}d-none{%end%}">done</i>
+               <!-- <button type="button" class="btn btn-primary mb-2 float-left border-dark rounded"></button> -->
+               <a href="/dish/{{dish['id']}}" class="text-decoration-none">
+               <button type="button" class="btn btn-primary mb-2 float-right border-dark rounded">Подробнее</button>
+               </a>
             </div>
-                </img>
-            </div>
-            {% end %}
-			{% end %}
-        </div>
-    </div>
+            </img>
+         </div>
+         {% end %}
+         {% end %}
+      </div>
+   </div>
 </div>
 <script>
-    $(document).ready(function(){
-    if (location.search) {
-        $("#auth-modal-title").text("Вы не авторизовались!");
-        $("#auth-modal-title").css("color", "red");
-        $("#logInModal").modal('show');
-    }
-})
+   $(document).ready(function(){
+   if (location.search) {
+       $("#auth-modal-title").text("Вы не авторизовались!");
+       $("#auth-modal-title").css("color", "red");
+       $("#logInModal").modal('show');
+   }
+   
+       $('[id^="dish_id_"]').click(function(){
+        let elemid = $(this).attr('id').substring(8)
+
+       if($(this).find('i').hasClass('d-none')){
+       $(this).find('i').removeClass('d-none')
+        
+        aj(true, elemid)
+   }
+       else{
+           $(this).find('i').addClass('d-none')
+        aj(false, elemid)
+       }
+   })
+   
+       function aj(bool, elemid){
+        
+   $.ajax({
+   url: "/changeUserPreOrder",
+   type: "POST", // адрес, на который будет отправлен запрос
+   data: JSON.stringify({'elemid': elemid,
+   'isadd': bool}), // новый контекст исполнения функции
+   success: function(){ // если запрос успешен вызываем функцию
+    $( this ).html( "Всё ок" ); // добавлем текстовое содержимое в элемент с классом .myClass
+   }
+   });  
+
+
+   }
+   
+   
+   })
+   
+   
 </script>
 {% end %}

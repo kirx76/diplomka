@@ -17,6 +17,12 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
+thead th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  top: 0;
+}
+
 /*[id^="ingr_name_"] {
 	vertical-align: -webkit-baseline-middle;
 	color: red;

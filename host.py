@@ -5,6 +5,7 @@ import tornado.ioloop
 import tornado.web
 import connections
 import datetime
+import json
 
 settings = {
     "cookie_secret": "61oETzKXQAGaYdk333EmGeJfdfdh12345ddsa2JFuYh7EQnp2XdTP1o/Vo=",
@@ -52,9 +53,27 @@ class MainHandler(BaseHandler):
         cursor = connect.cursor()
         cursor.execute("select * from dishes")
         dishes = cursor.fetchall()
-        cursor.close()
-        connect.close()
-        self.render("index.html", dishes=dishes, timed=timed(), user=get_user_info(self))
+        try:
+            get_us = tornado.escape.xhtml_escape(self.current_user)
+        except Exception as e:
+            get_us = False
+        if get_us != False:
+            cursor.execute(f"select * from users where phone={get_us}")
+            userinfo = int(cursor.fetchone()['id'])
+            cursor.execute(f"SELECT dishes.id, dishes.name, dishes.price, dishes.description, dishes.img_src, dishes.dish_type FROM users \
+    INNER JOIN users_orders \
+    ON users_orders.user_id = users.id \
+    JOIN dishes_order \
+    ON dishes_order.order_id = users_orders.order_id \
+    JOIN dishes \
+    ON dishes.id = dishes_order.dish_id \
+    WHERE users.id = {userinfo} AND users.last_order_id = dishes_order.order_id ORDER BY dishes_order.order_id desc")
+            dishes_list = cursor.fetchall()
+            cursor.close()
+            connect.close()
+            self.render("index.html", dishes=dishes, timed=timed(), user=get_user_info(self), dishes_list=dishes_list)
+        else:
+            self.render("index.html", dishes=dishes, timed=timed(), user=get_user_info(self), dishes_list=None)
 
 class viewDishInfoHandler(BaseHandler):
     def get(self, args):
@@ -112,17 +131,96 @@ class viewUserHandler(BaseHandler):
         cursor = connect.cursor()
         cursor.execute(f"select * from users where id={args}")
         userinfo = cursor.fetchone()
-        cursor.execute(f"SELECT * FROM `users` \
+        cursor.execute(f"SELECT orders.id, orders.total_price, orders.date FROM `users` \
             INNER JOIN `users_orders`\
             ON `users_orders`.`user_id` = `users`.`id`\
             LEFT JOIN `orders`\
             ON `users_orders`.`order_id` = `orders`.`id`\
             WHERE `users`.`id` = {args}")
         orders = cursor.fetchall()
+        cursor.execute(f"SELECT dishes.name FROM `users`\
+  INNER JOIN `users_orders`\
+    ON `users_orders`.`user_id` = `users`.`id`\
+  LEFT JOIN `orders`\
+    ON `users_orders`.`order_id` = `orders`.`id`\
+    JOIN dishes_order\
+    ON dishes_order.order_id = users_orders.order_id\
+    JOIN dishes\
+    ON dishes.id = dishes_order.dish_id\
+  WHERE `users`.`id` = {args} AND users.last_order_id = orders.id;")
+        last_orders = cursor.fetchall()
+        last_order = []
+        for item in last_orders:
+            last_order.append(item['name'])
         cursor.close()
         connect.close()
-        self.render("userinfo.html", timed=timed(), user=get_user_info(self), userinfo=userinfo, orders=orders)
+        self.render("userinfo.html", timed=timed(), user=get_user_info(self), userinfo=userinfo, orders=orders, last_order=last_order)
 
+    def post(self, args):
+        new_name = self.get_argument('name')
+        new_phone = self.get_argument('phone')
+        connect = connections.getConnection()
+        cursor = connect.cursor()
+        cursor.execute(f'UPDATE users SET name="{new_name}", phone="{new_phone}" WHERE id={args}')
+        self.set_secure_cookie("phone", new_phone)
+        connect.commit()
+        self.redirect(f"/user/{args}")
+
+class changeUserInfo(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        print('aza')
+
+class changeUserPreOrder(BaseHandler):
+    @tornado.web.authenticated
+    def post(self, *args):
+        dic = json.loads(self.request.body.decode('utf-8'))
+        elemid = dic['elemid']
+        reason = dic['isadd']
+        user_id = (get_user_info(self)['id'])
+        print(elemid)
+        print(reason)
+        connect = connections.getConnection()
+        cursor = connect.cursor()
+        cursor.execute(f"SELECT * FROM dishes WHERE id = {elemid}")
+        dish_price = int(cursor.fetchone()['price'])
+        cursor.execute(f"SELECT * FROM `users`\
+  INNER JOIN `users_orders`\
+    ON `users_orders`.`user_id` = `users`.`id`\
+  LEFT JOIN `orders`\
+    ON `users_orders`.`order_id` = `orders`.`id`\
+  WHERE `users`.`id` = {user_id} ORDER BY order_id desc")
+        last_order = cursor.fetchone()
+        print(last_order)
+        if last_order['is_payed'] == "True":
+            if reason:
+                print(12)
+                cursor.execute(f"INSERT INTO `diplom`.`orders` (`total_price`) VALUES ('{dish_price}')")
+                cursor.execute(f"SELECT * FROM orders order BY id desc")
+                order_id = cursor.fetchone()['id']
+                cursor.execute(f"INSERT INTO `diplom`.`users_orders` (`user_id`, `order_id`) VALUES ('{user_id}', '{order_id}')")
+                cursor.execute(f"INSERT INTO `diplom`.`dishes_order` (`dish_id`, `order_id`) VALUES ('{elemid}', '{order_id}')")
+                cursor.execute(f"UPDATE USERS SET last_order_id = {order_id} WHERE id = {user_id}")
+                connect.commit()
+                connect.close()     
+        else:
+            if reason:
+                print(1234)
+                cursor.execute(f"SELECT * FROM orders order BY id desc")
+                order_id = cursor.fetchone()['id']
+                cursor.execute(f"UPDATE `diplom`.`orders` SET `total_price`= total_price + {dish_price} WHERE  `id`={order_id}")
+                cursor.execute(f"INSERT INTO `diplom`.`dishes_order` (`dish_id`, `order_id`) VALUES ('{elemid}', '{order_id}')")
+                connect.commit()
+                connect.close()
+            else:
+                print(12345)
+                cursor.execute(f"SELECT * FROM orders order BY id desc")
+                order_id = cursor.fetchone()['id']
+                cursor.execute(f"UPDATE `diplom`.`orders` SET `total_price`= total_price - {dish_price} WHERE  `id`={order_id}")
+                cursor.execute(f"DELETE FROM `diplom`.`dishes_order` WHERE  `dish_id`={elemid} and `order_id`={order_id}")
+                connect.commit()
+                connect.close()
+        print('pre order are changed')
 
 def make_app():
     return tornado.web.Application([
@@ -132,6 +230,8 @@ def make_app():
         (r"/login", LoginHandler),
         (r"/deauth", deauthHandler),
         (r"/user/([0-9]+)", viewUserHandler),
+        (r"/user/changeUserInfo", changeUserInfo),
+        (r"/changeUserPreOrder", changeUserPreOrder),
         # (r"/post/([0-9]+)", ViewPostHandler),
     ], **settings,
         template_path=os.path.join(os.path.dirname(__file__), "templates"),

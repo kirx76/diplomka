@@ -17,7 +17,7 @@
                                 </p>
                             </img>
                         </div>
-                        <div class="col-6 d-inline-block mb-4">
+                        <div class="col-6 d-inline-block mb-4" id="ingredients_list">
                         	<h2>Список ингредиентов</h2>
                             {% for ingredient in ingredients %}
                             <div class="row border rounded mt-2 mr-0">
@@ -25,12 +25,12 @@
 									<span class="ml-2"><abbr class="text-decoration-none" title="{{ingredient['description']}}" id="ingr_name_{{ingredient['id']}}">{{ ingredient['name'] }}</abbr></span>
 								</div>
 								<div class="col-3 d-inline-block mt-2 mb-2">
-									<p class="text-muted">{{ingredient['calories']}}<sub>Ккал</sub></p>
+									<p class="text-muted" id="ingr_id_{{ingredient['id']}}">{{ingredient['calories']}}<sub>Ккал</sub></p>
 								</div>
 							</div>
 							{% end %}
 								<div class="col-12 d-inline-block mt-2 mb-2 ml-0">
-									<p class="text-muted">Итоговая сумма калорий:</p>
+									<p class="text-muted" id="all_cal">Итоговая сумма калорий:</p>
 								</div>
                         </div>
                     </div>
@@ -39,4 +39,15 @@
         </div>
     </div>
 </div>
+<script>
+
+	let all_cal = 0;
+	$('[id^="ingr_id_"]').each(function(){
+		all_cal += parseInt($(this).text().substring(0, $(this).text().length - 4))
+	});
+		console.log(all_cal)
+	console.log($('#all_cal').text($('#all_cal').text() + ' ' + all_cal));
+	
+</script>
+
 {% end %}

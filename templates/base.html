@@ -6,9 +6,13 @@
       <link rel="stylesheet" href="../static/css/style.css">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
          crossorigin="anonymous"></script>
+         <script src="../static/js/jquery.spincrement.js"></script>
+         <script src="../static/js/jquery.js"></script>
    </head>
    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" id="main-navbar">
       <a class="navbar-brand" href="/">FeedFood</a>
@@ -27,11 +31,12 @@
       <div class="buttons-nav-bar">
          {% if user %}
          <a href="/user/{{ user['id'] }}" type="button" class="btn btn-light rounded-pill border mr-2">Профиль</a>
+         <a href="/basket/{{ user['id'] }}" type="button" class="btn btn-light rounded-pill border mr-2">Корзина</a>
          {% end %}
          {% if not user %}
          <button type="button" class="btn btn-light rounded-pill border" id="authModal" data-toggle="modal" data-target="#logInModal">Войти</button>
          {% else %}
-         <button type="button" class="btn btn-light rounded-pill border" id="exitModal" data-toggle="modal" data-target="#exitModal">Выйти</button>
+         <button type="button" class="btn btn-light rounded-pill border" id="exitModalButton" data-toggle="modal" data-target="#exitModal">Выйти</button>
          {% end %}
       </div>
    </nav>
