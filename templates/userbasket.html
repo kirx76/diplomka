@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Корзина{% end %}
+{% block content %}
+<div class="container">
+    <div class="container-fluid mt-3" id="userinfo">
+        <div class="row">
+            <div class="col-12">
+                <h5 class="user-last-order" id="{{ userinfo['id'] }}"
+                    data-uorderid="{% if last_order %} {{ last_order[0]['users_orders_id'] }} {% end %}">Ваш последний заказ</h5>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 80%;">Название</th>
+                        <th scope="col" style="width: 10%;">Количество</th>
+                        <th scope="col" style="width: 5%;">Цена</th>
+                        <th scope="col" style="width: 5%;">Действие</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for last_dish in last_order %}
+                    <tr>
+                        <th scope="row">{{last_dish['dish_name']}}</th>
+                        <th scope="row" class="text-center" id="{{last_dish['dishes_order_id']}}">
+                            {{last_dish['dish_count']}}
+                        </th>
+                        <th scope="row" class="dish_price_{{last_dish['dishes_order_id']}}" data-order_id="{{last_dish['dishes_order_id']}}">{{last_dish['dish_price']}}</th>
+                        <th scope="row" style="display: flex" class="text-center">
+                            <i class="material-icons" id="add_dish_{{last_dish['dish_id']}}"
+                               data-order_id="{{last_dish['dishes_order_id']}}">
+                                add_circle_outline
+                            </i>
+                            <i class="material-icons" id="rem_dish_{{last_dish['dish_id']}}"
+                               data-order_id="{{last_dish['dishes_order_id']}}">
+                                remove_circle_outline
+                            </i>
+                        </th>
+                    </tr>
+                    {%end%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="modal fade" id="try-to-delete" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Удалить из заказа?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form id="form-action" action="" method="post">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="submit" id="confirm-button" class="btn btn-danger" name="">Удалить</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+
+        if (location.search) {
+            $("#auth-modal-title").text("Вы не авторизовались!");
+            $("#auth-modal-title").css("color", "red");
+            $("#logInModal").modal('show');
+        }
+        // let user_id = $('.user-last-order').attr('id');
+        // let uorder_id = $('.user-last-order').data('uorderid');
+        $('[id^="add_dish_"]').click(function () {
+            let order_id = $(this).data('order_id');
+            if (parseInt($('#' + order_id).text()) > 0) {
+                aj('up', order_id);
+                $('#' + order_id).text(parseInt($('#' + order_id).text()) + 1);
+            }
+        });
+        $('[id^="rem_dish_"]').click(function () {
+            let order_id = $(this).data('order_id');
+            if (parseInt($('#' + order_id).text()) > 1) {
+                aj('down', order_id);
+                $('#' + order_id).text(parseInt($('#' + order_id).text()) - 1);
+            } else {
+                $('#form-action').attr('action', '/removeDishFromOrder/' + $('.dish_price_' + order_id).data('order_id'));
+                $('#confirm-button').attr('name', $('.dish_price_' + order_id).text());
+                $('#try-to-delete').modal('show')
+            }
+        });
+
+        function aj(way, order_id) {
+
+            $.ajax({
+                url: "/userChangeDishCount",
+                type: "POST", // адрес, на который будет отправлен запрос
+                data: JSON.stringify({
+                    'order_id': order_id,
+                    'way': way
+                }), // новый контекст исполнения функции
+                success: function () { // если запрос успешен вызываем функцию
+                    // $(this).html("Всё ок"); // добавлем текстовое содержимое в элемент с классом .myClass
+                }
+            });
+
+
+        }
+
+
+    })
+
+
+</script>
+
+{% end %}

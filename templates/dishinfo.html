@@ -25,7 +25,7 @@
 									<span class="ml-2"><abbr class="text-decoration-none" title="{{ingredient['description']}}" id="ingr_name_{{ingredient['id']}}">{{ ingredient['name'] }}</abbr></span>
 								</div>
 								<div class="col-3 d-inline-block mt-2 mb-2">
-									<p class="text-muted" id="ingr_id_{{ingredient['id']}}">{{ingredient['calories']}}<sub>Ккал</sub></p>
+									<p class="text-muted" id="ingr_id_{{ingredient['id']}}">{{ingredient['calories'] * ingredient['weight'] / 100}}<sub>Ккал</sub></p>
 								</div>
 							</div>
 							{% end %}
@@ -43,7 +43,7 @@
 
 	let all_cal = 0;
 	$('[id^="ingr_id_"]').each(function(){
-		all_cal += parseInt($(this).text().substring(0, $(this).text().length - 4))
+		all_cal += parseFloat($(this).text().substring(0, $(this).text().length - 4))
 	});
 		console.log(all_cal)
 	console.log($('#all_cal').text($('#all_cal').text() + ' ' + all_cal));
